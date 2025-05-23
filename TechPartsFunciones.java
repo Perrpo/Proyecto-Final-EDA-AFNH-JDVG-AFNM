@@ -7,6 +7,7 @@ recorrido lineal del ArrayList con filtros). */
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator; //importar la clase Comparator
 
 public class TechPartsFunciones {
     private ArrayList<ParteHardware> catalogo; // ArrayList para almacenar el catálogo de partes
@@ -23,7 +24,8 @@ public class TechPartsFunciones {
 
     // Búsqueda por nombre o código de producto (búsqueda lineal sobre el ArrayList)
     public ParteHardware buscarParte(String busqueda) {
-        for (ParteHardware parte : catalogo) { // para cada objeto de tipo ParteHardware en el ArrayList catalogo haz lo siguiente
+        for (ParteHardware parte : catalogo) { // para cada objeto de tipo ParteHardware en el ArrayList catalogo haz lo
+                                               // siguiente
             String codigo = String.valueOf(parte.getCodigoProducto());
             if (parte.getNombre().equalsIgnoreCase(busqueda) ||
                     codigo.equalsIgnoreCase(busqueda)) {
@@ -50,6 +52,75 @@ public class TechPartsFunciones {
         } else {
             System.out.println("Parte no encontrado: " + nombreOcodigo);
         }
+    }
+
+    /*
+     * 4. Ordenamiento del inventario (Algoritmo de ordenamiento): implementar
+     * métodos
+     * para ordenar el ArrayList de partes por nombre, precio o cantidad en stock
+     * utilizando
+     * un algoritmo de ordenamiento (ej: Merge Sort, Quick Sort, Insertion Sort).
+     */
+
+    // Método para ordenar por nombre usando QuickSort
+    public void ordenarPorNombre() {
+        quickSort(0, catalogo.size() - 1, Comparator.comparing(ParteHardware::getNombre));
+    }
+
+    // Método para ordenar por precio usando QuickSort
+    public void ordenarPorPrecio() {
+        quickSort(0, catalogo.size() - 1, Comparator.comparingDouble(ParteHardware::getPrecio));
+    }
+
+    // Método para ordenar por cantidad en stock usando QuickSort
+    public void ordenarPorStock() {
+        quickSort(0, catalogo.size() - 1, Comparator.comparingInt(ParteHardware::getStock));
+    }
+
+    // Implementación de QuickSort
+    private void quickSort(int inicio, int fin, Comparator<ParteHardware> comparador) {
+        if (inicio < fin) {
+            int indicePivote = particionar(inicio, fin, comparador);
+            quickSort(inicio, indicePivote - 1, comparador);
+            quickSort(indicePivote + 1, fin, comparador);
+        }
+    }
+
+    // Método de partición para QuickSort
+    private int particionar(int inicio, int fin, Comparator<ParteHardware> comparador) {
+        ParteHardware pivote = catalogo.get(fin);
+        int i = inicio - 1;
+
+        for (int j = inicio; j < fin; j++) {
+            if (comparador.compare(catalogo.get(j), pivote) <= 0) {
+                i++;
+                intercambiar(i, j);
+            }
+        }
+
+        intercambiar(i + 1, fin);
+        return i + 1;
+    }
+
+    // Método auxiliar para intercambiar elementos
+    private void intercambiar(int i, int j) {
+        ParteHardware temp = catalogo.get(i);
+        catalogo.set(i, catalogo.get(j));
+        catalogo.set(j, temp);
+    }
+
+    /*
+     * 5. Selección de partes para ofertas (Algoritmo de selección): implementar una
+     * funcionalidad para seleccionar los k productos con la menor cantidad en stock
+     * del
+     * ArrayList utilizando un algoritmo de selección o mediante ordenamiento
+     * parcial.
+     */
+
+    // Método para seleccionar los k productos con la menor cantidad en stock
+    public List<ParteHardware> seleccionarProductosBajoStock(int k) {
+        ordenarPorStock();
+        return catalogo.subList(0, Math.min(k, catalogo.size()));
     }
 
 }
